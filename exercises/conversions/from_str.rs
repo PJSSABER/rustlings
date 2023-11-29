@@ -28,7 +28,7 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
+// I AM DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -45,7 +45,29 @@ enum ParsePersonError {
 
 impl FromStr for Person {
     type Err = ParsePersonError;
+    //type Err = ParsePersonError; is defining a type alias.  
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        
+        if s.len() == 0 {
+            return Err(ParsePersonError::Empty);
+        }
+
+        if s.split(',').count() != 2 {
+            return Err(ParsePersonError::BadLen);
+        }
+
+        if let Some((one, two)) = s.split_once(',') {
+            if one.len() == 0 {
+                return Err(ParsePersonError::NoName);
+            } 
+
+            match two.parse::<usize>() {
+                Ok(age) => { return Ok( Person {name: one.to_string(),age: age,}); } ,
+                Err(a) => { return Err(ParsePersonError::ParseInt(a)); } ,
+            }
+        }
+
+        Err(ParsePersonError::Empty)
     }
 }
 
